@@ -1,44 +1,54 @@
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/OBJLoader.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Babylon.js OBJ 檔案載入範例</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { width: 100%; height: 100%; display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script>
-        var scene, camera, renderer;
+        document.addEventListener("DOMContentLoaded", function() {
+            var canvas = document.createElement("canvas");
+            document.body.appendChild(canvas);
 
-        init();
-        animate();
+            var engine = new BABYLON.Engine(canvas, true);
 
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 5);
-            camera.lookAt(new THREE.Vector3(0, 0, 0));
+            var createScene = function() {
+                var scene = new BABYLON.Scene(engine);
 
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0xffffff); // 設定底色為白色
-            document.body.appendChild(renderer.domElement);
+                var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 4, 4, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
 
-            var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
+                var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
-            var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(1, 1, 1).normalize();
-            scene.add(directionalLight);
+                // 載入網路上的 3D 檔案
+                var loader = new BABYLON.AssetsManager(scene);
+                var meshTask = loader.addMeshTask("test task", "", "test.obj");
+                meshTask.onSuccess = function(task) {
+                    task.loadedMeshes.forEach(function(mesh) {
+                        // 在場景中添加載入的 3D 模型
+                        mesh.position.y = 0.5;
+                    });
+                };
+                loader.load();
 
-            var loader = new THREE.OBJLoader();
-            loader.load('test.obj', function(obj) {
-                obj.traverse(function(child) {
-                    if (child instanceof THREE.Mesh) {
-                        var material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-                        child.material = material;
-                    }
-                });
-                obj.scale.set(0.1, 0.1, 0.1);
-                scene.add(obj);
+                return scene;
+            };
+
+            var scene = createScene();
+
+            engine.runRenderLoop(function() {
+                scene.render();
             });
-        }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
+            window.addEventListener("resize", function() {
+                engine.resize();
+            });
+        });
     </script>
+</body>
+</html>
