@@ -1,1 +1,41 @@
-<h1>Hello</h1>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var canvas = document.createElement("canvas");
+            document.body.appendChild(canvas);
+
+            var engine = new BABYLON.Engine(canvas, true);
+
+            var createScene = function() {
+                var scene = new BABYLON.Scene(engine);
+
+                var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 4, 4, BABYLON.Vector3.Zero(), scene);
+                camera.attachControl(canvas, true);
+
+                var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+
+                // 載入網路上的 3D 檔案
+                var loader = new BABYLON.AssetsManager(scene);
+                var meshTask = loader.addMeshTask("model task", "", "https://TomeLu1215.github.io/test/test.obj");
+                meshTask.onSuccess = function(task) {
+                    task.loadedMeshes.forEach(function(mesh) {
+                        // 在場景中添加載入的 3D 模型
+                        mesh.position.y = 0.5;
+                    });
+                };
+                loader.load();
+5
+                return scene;
+            };
+
+            var scene = createScene();
+
+            engine.runRenderLoop(function() {
+                scene.render();
+            });
+
+            window.addEventListener("resize", function() {
+                engine.resize();
+            });
+        });
+    </script>
