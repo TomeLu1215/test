@@ -14,17 +14,9 @@
 
                 var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
-                // 載入網路上的 3D 檔案
-                var loader = new BABYLON.AssetsManager(scene);
-                var meshTask = loader.addMeshTask("model task", "", "https://TomeLu1215.github.io/test/test.obj");
-                meshTask.onSuccess = function(task) {
-                    task.loadedMeshes.forEach(function(mesh) {
-                        // 在場景中添加載入的 3D 模型
-                        mesh.position.y = 0.5;
-                    });
-                };
-                loader.load();
-5
+                var box = BABYLON.MeshBuilder.CreateBox("box", { size: 1 }, scene);
+                box.position.y = 0.5;
+
                 return scene;
             };
 
