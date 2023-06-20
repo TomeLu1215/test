@@ -1,41 +1,44 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/OBJLoader.js"></script>
     <script>
-        // 建立場景(Scene)
-        var scene = new THREE.Scene();
+        var scene, camera, renderer;
 
-        // 建立相機(Camera)
-        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 5;
+        init();
+        animate();
 
-        // 建立渲染器(Renderer)
-        var renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 5);
+            camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-        // 建立幾何體(Geometry)
-        var geometry = new THREE.BoxGeometry(1, 1, 1);
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0xffffff); // 設定底色為白色
+            document.body.appendChild(renderer.domElement);
 
-        // 建立材質(Material)
-        var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
 
-        // 建立網格(Mesh)並結合幾何體和材質
-        var cube = new THREE.Mesh(geometry, material);
+            var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(1, 1, 1).normalize();
+            scene.add(directionalLight);
 
-        // 將網格加入場景
-        scene.add(cube);
-
-        // 動畫更新函式
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // 使立方體旋轉
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
-
-            // 渲染場景和相機
-            renderer.render(scene, camera);
+            var loader = new THREE.OBJLoader();
+            loader.load('test.obj', function(obj) {
+                obj.traverse(function(child) {
+                    if (child instanceof THREE.Mesh) {
+                        var material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+                        child.material = material;
+                    }
+                });
+                obj.scale.set(0.1, 0.1, 0.1);
+                scene.add(obj);
+            });
         }
 
-        // 執行動畫更新函式
-        animate();
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
     </script>
