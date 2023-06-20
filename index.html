@@ -2,53 +2,24 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Babylon.js OBJ 檔案載入範例</title>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { width: 100%; height: 100%; display: block; }
-    </style>
+    <title>A-Frame 3D 網頁範例</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 </head>
 <body>
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var canvas = document.createElement("canvas");
-            document.body.appendChild(canvas);
+    <a-scene>
+        <a-assets>
+            <a-asset-item id="model" src="model.obj"></a-asset-item>
+        </a-assets>
 
-            var engine = new BABYLON.Engine(canvas, true);
+        <a-camera position="0 1.6 0" look-controls>
+            <a-cursor></a-cursor>
+        </a-camera>
 
-            var createScene = function() {
-                var scene = new BABYLON.Scene(engine);
+        <a-light type="ambient" color="#888"></a-light>
+        <a-light type="directional" position="2 4 3" target="#model"></a-light>
 
-                var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 4, 4, BABYLON.Vector3.Zero(), scene);
-                camera.attachControl(canvas, true);
-
-                var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-
-                // 載入網路上的 3D 檔案
-                var loader = new BABYLON.AssetsManager(scene);
-                var meshTask = loader.addMeshTask("model task", "", "test.obj");
-                meshTask.onSuccess = function(task) {
-                    task.loadedMeshes.forEach(function(mesh) {
-                        // 在場景中添加載入的 3D 模型
-                        mesh.position.y = 0.5;
-                    });
-                };
-                loader.load();
-
-                return scene;
-            };
-
-            var scene = createScene();
-
-            engine.runRenderLoop(function() {
-                scene.render();
-            });
-
-            window.addEventListener("resize", function() {
-                engine.resize();
-            });
-        });
-    </script>
+        <a-entity id="model" obj-model="obj: #model"></a-entity>
+    </a-scene>
 </body>
 </html>
+
