@@ -27,7 +27,7 @@
 
                 // 載入網路上的 3D 檔案
                 var loader = new BABYLON.AssetsManager(scene);
-                var meshTask = loader.addMeshTask("test task", "", "test.obj");
+                var meshTask = loader.addMeshTask("model task", "", "test.obj");
                 meshTask.onSuccess = function(task) {
                     task.loadedMeshes.forEach(function(mesh) {
                         // 在場景中添加載入的 3D 模型
